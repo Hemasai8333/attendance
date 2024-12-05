@@ -6,3 +6,4 @@ Werkzeug
 opencv-python
 scikit-learn
 pandas
+flask-cors

@@ -3,6 +3,7 @@ import os, json
 from flask import Flask, request, render_template, jsonify, Response
 from datetime import date
 from datetime import datetime
+from flask_cors import CORS
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
@@ -13,6 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # subject = "english"
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usersdds.db'  # SQLite database file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

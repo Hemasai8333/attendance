@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # subject = "english"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usersdb.db'  # SQLite database file
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usersdds.db'  # SQLite database file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -24,6 +24,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    email = db.Column(db.String(80), unique=True, nullable=False)
 
 
 class Organization(db.Model):
@@ -229,12 +230,13 @@ def register():
     data = request.get_json()
     username = data['username']
     password = data['password']
+    email = data['email']
     is_admin = data.get('is_admin', False)
 
     # Hash the password before storing it
     hashed_password = generate_password_hash(password, method='sha256')
 
-    new_user = User(username=username, password=hashed_password, is_admin=is_admin)
+    new_user = User(username=username, password=hashed_password, is_admin=is_admin, email = email)
     db.session.add(new_user)
     db.session.commit()
     
@@ -246,8 +248,9 @@ def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
+    # email = data['email']
 
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(email=username).first()
     if user and check_password_hash(user.password, password):
         return jsonify({"status": 200, "message": "Login successful!", "data":{"user_id": user.id, "is_admin": user.is_admin}}), 200
     else:

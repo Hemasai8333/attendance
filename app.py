@@ -129,7 +129,8 @@ def home():
 @app.route('/start', methods=['GET'])
 def start():
     global subject
-    subject = "cse"
+    subject = request.args.get('subject')
+    # subject = "cse"
 
     if not os.path.isdir('Attendance'):
         os.makedirs('Attendance')
@@ -214,7 +215,7 @@ def add():
     cv2.destroyAllWindows()
     print('Training Model')
     train_model()
-    names, rolls, times, l = extract_attendance()
+    # names, rolls, times, l = extract_attendance(subject)
     return jsonify({
         "status": 200
     })
@@ -252,8 +253,18 @@ def login():
     else:
         return jsonify({"status": 401, "message": "Invalid username or password.", "data": None}), 401
     
+@app.route('/userdetails', methods=['POST'])
+def user_data():
+    data = request.get_json()
+    id = data['userid']
+    try:
+        user = User.query.filter_by(id=id).first()
 
-
+        user_data = {"id": user.id, "name": user.username}
+        return jsonify({"status": 200, "message": "userdata retrived successfully", "data":{"user_data": user_data}}), 200
+    except:
+        
+        return jsonify({"status": 200, "message": "please provide the valid user id", "data":{"user_data": None}}), 200
 # Route to get all users
 @app.route('/users', methods=['GET'])
 def get_users():
